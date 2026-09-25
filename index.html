@@ -47,6 +47,8 @@
     padding:7px 12px;border-radius:8px;cursor:pointer;transition:background .15s ease, border-color .15s ease;
   }
   .tool-btn:hover{background:rgba(247,243,234,0.15);border-color:rgba(247,243,234,0.28);}
+  .tool-btn:disabled{opacity:0.5;cursor:default;}
+  .tool-btn:disabled:hover{background:rgba(247,243,234,0.08);border-color:rgba(247,243,234,0.16);}
   .tool-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
   .search-wrap{position:relative;display:flex;align-items:center;gap:6px;}
   #search-input{
@@ -97,6 +99,13 @@
     0%{transform:translate(-50%,-50%) scale(0.25);opacity:0;}
     65%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}
     100%{transform:translate(-50%,-50%) scale(1);opacity:1;}
+  }
+  /* Brief highlight on both ends of a new link — flashes in immediately (0%)
+     then fades back to nothing over the animation's remaining duration. */
+  .node.just-linked{animation:nodeLinkFlash .9s ease-out both;}
+  @keyframes nodeLinkFlash{
+    0%{box-shadow:0 0 0 3px var(--gold), 0 0 26px rgba(217,164,65,0.6), 0 8px 22px rgba(0,0,0,0.45);}
+    100%{box-shadow:0 8px 22px rgba(0,0,0,0.45);}
   }
   .node-accent{height:3px;border-radius:12px 12px 0 0;}
   .node.type-text .node-accent{background:var(--text-mid);}
@@ -210,10 +219,28 @@
   .file-drop:hover{border-color:var(--gold-dim);color:var(--text-hi);}
   .thumb{max-width:100%;border-radius:6px;margin-top:8px;}
   .linked-list{display:flex;flex-direction:column;gap:6px;}
-  .linked-item{display:flex;align-items:center;justify-content:space-between;background:rgba(247,243,234,0.04);
+  .linked-item{display:flex;flex-direction:column;gap:5px;background:rgba(247,243,234,0.04);
     border-radius:6px;padding:7px 9px;font-size:12.5px;color:var(--text-hi);}
+  .linked-item-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .linked-item-top span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .linked-item button{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:13px;}
   .linked-item button:hover{color:var(--danger);}
+  .linked-item-rel{display:flex;align-items:center;gap:6px;}
+  .link-label-input{
+    flex:1;background:rgba(247,243,234,0.05);border:1px solid var(--line);border-radius:6px;
+    color:var(--text-hi);font-family:'IBM Plex Sans',sans-serif;font-size:12px;padding:5px 8px;outline:none;min-width:0;
+  }
+  .link-label-input:focus{border-color:var(--gold-dim);}
+  .link-label-input::placeholder{color:var(--text-dim);}
+  .link-analyze-btn{
+    flex:none;display:flex;align-items:center;gap:4px;background:none;border:1px solid var(--line);border-radius:6px;
+    color:var(--text-dim);cursor:pointer;font-size:11px;padding:5px 7px;white-space:nowrap;
+  }
+  .link-analyze-btn:hover{border-color:var(--gold-dim);color:var(--gold);}
+  .link-analyze-btn:disabled{opacity:0.6;cursor:default;}
+  .link-analyze-btn svg{flex:none;}
+  .link-label-chip rect{fill:var(--ink-2);stroke:var(--gold-dim);stroke-width:1;opacity:0.94;}
+  .link-label-chip text{fill:var(--gold);font-family:'IBM Plex Sans',sans-serif;font-size:10.5px;font-weight:600;}
   .divider{height:1px;background:var(--line);margin:2px 0;}
   .ai-section{display:flex;flex-direction:column;gap:8px;}
   .ai-answer{
@@ -470,26 +497,19 @@
     font-size:15px;cursor:pointer;line-height:1;}
   .history-delete:hover{color:var(--danger);}
 
-  .workspace-box{width:min(400px,92vw);}
-  #workspace-body{padding:10px;display:flex;flex-direction:column;gap:6px;max-height:56vh;overflow-y:auto;}
-  .workspace-footer{padding:12px 16px 16px;border-top:1px solid var(--line);}
-  .workspace-footer .btn{width:100%;text-align:center;}
-  .workspace-item{
-    display:flex;align-items:center;justify-content:space-between;gap:8px;
-    background:rgba(247,243,234,0.04);border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;
+  .workspace-box{width:min(820px,94vw);}
+  #workspace-body{
+    padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(130px,17vw,200px),1fr));
+    gap:12px;max-height:min(540px,66vh);overflow-y:auto;
   }
-  .workspace-item:hover{border-color:var(--gold-dim);}
-  .workspace-item.active{border-color:var(--gold);background:rgba(217,164,65,0.08);}
-  .workspace-item-main{flex:1;min-width:0;}
-  .workspace-name{font-family:'Fraunces',serif;font-size:14px;color:var(--text-hi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .workspace-meta{font-size:11px;color:var(--text-dim);margin-top:2px;}
-  .workspace-item-actions{display:flex;gap:4px;flex-shrink:0;}
-  .workspace-item-actions button{
-    background:none;border:none;color:var(--text-dim);cursor:pointer;padding:5px;border-radius:6px;
+  .home-thumb.active{border-color:var(--gold);background:rgba(217,164,65,0.08);}
+  .thumb-actions{display:flex;gap:4px;margin-top:-2px;}
+  .thumb-actions button{
+    background:none;border:none;color:var(--text-dim);cursor:pointer;padding:4px;border-radius:6px;
     display:flex;align-items:center;justify-content:center;
   }
-  .workspace-item-actions button:hover{background:rgba(247,243,234,0.08);color:var(--text-hi);}
-  .workspace-item-actions button.danger:hover{color:var(--danger);}
+  .thumb-actions button:hover{background:rgba(247,243,234,0.08);color:var(--text-hi);}
+  .thumb-actions button.danger:hover{color:var(--danger);}
 
   #multi-select-bar{
     display:flex;position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
@@ -786,14 +806,11 @@
         <button class="panel-close" id="workspace-close">&times;</button>
       </div>
       <div class="modal-body" id="workspace-body"></div>
-      <div class="workspace-footer">
-        <button class="btn" id="workspace-new-btn">+ New map</button>
-      </div>
     </div>
   </div>
 </div>
 
-<input type="file" id="file-input" style="display:none" accept="image/*,.pdf">
+<input type="file" id="file-input" style="display:none" accept="image/*,.pdf,application/pdf">
 <input type="file" id="import-input" style="display:none" accept="application/json">
 
 
@@ -845,6 +862,14 @@
   var selectedId = null;
   var panelMode = "closed";
   var dragNode = null;
+  // Manual double-tap detection for opening a node panel on touch/pen. Native
+  // "dblclick" doesn't reliably synthesize from two taps on iOS Safari when the
+  // target has touch-action:none (our nodes do, for custom drag handling), so
+  // touch/pen taps are tracked here instead; mouse still uses the native
+  // dblclick listener below and isn't affected by this.
+  var lastNodeTap = null;            // { id, time, x, y } of the most recent qualifying tap
+  var DBL_TAP_MS = 350;              // max gap between taps to count as a double-tap
+  var DBL_TAP_SLOP = 24;             // max finger drift (px) between the two taps
   var panDrag = null;
   var marqueeDrag = null;
   var longPress = null;              // while a canvas hold is being timed: { timer, pointerId, startX, startY }
@@ -855,6 +880,7 @@
   var linkDraft = null;
   var nodeEls = {};
   var linkPaths = {};
+  var linkLabels = {}; // pathId -> <g> chip drawn at the link's curve midpoint, only when l.label is set
   var suppressNextOutsideClick = false;
   var searchQuery = "";
   var searchMatches = [];
@@ -897,6 +923,16 @@
   }
   function estimateTokens(text){ return Math.max(0, Math.round((text || "").length / 4)); }
   function cleanFileName(name){ return name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " ").trim(); }
+  // Opens a URL in the system browser via a synthesized anchor click, the
+  // same mechanism the plain settings-link <a target="_blank"> tags already
+  // rely on -- more consistently honored across WebViews than window.open.
+  function openExternalUrl(url){
+    var a = document.createElement("a");
+    a.href = url; a.target = "_blank"; a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
 
   // File size limits: generous enough for virtually any real phone photo or
   // typical document, but enough of a ceiling to stop a huge file from
@@ -1248,6 +1284,8 @@
     nodeEls = {};
     Object.keys(linkPaths).forEach(function(pid){ linkPaths[pid].remove(); });
     linkPaths = {};
+    Object.keys(linkLabels).forEach(function(pid){ linkLabels[pid].remove(); });
+    linkLabels = {};
     world.innerHTML = "";
     selectedId = null; panelMode = "closed";
     multiSelected.clear();
@@ -1693,12 +1731,31 @@
     }
     var exists = state.links.some(function(l){ return (l.from === a && l.to === b) || (l.from === b && l.to === a); });
     if (exists) return;
-    state.links.push({ id: uid(), from: a, to: b });
+    state.links.push({ id: uid(), from: a, to: b, label: "" });
     renderAll();
     saveState();
     hapticImpact("LIGHT");
+    flashLinkedNodes(a, b);
     refreshOpenPanelLinks();
     maybeNudgeForApiKey();
+  }
+
+  // Briefly highlights both ends of a link right after it's made, so a
+  // connection reads as a deliberate, confirmed action rather than just a
+  // line quietly appearing. See the "just-linked" keyframe + the
+  // wasJustLinked carry-over in renderNodes (className gets fully replaced
+  // on every render, so the class has to be explicitly preserved there or
+  // an unrelated re-render mid-flash would cut the fade short).
+  function flashLinkedNodes(idA, idB){
+    if (reduceMotion) return;
+    [idA, idB].forEach(function(id){
+      var el = nodeEls[id];
+      if (!el) return;
+      el.classList.remove("just-linked");
+      void el.offsetWidth; // force reflow so the animation restarts if it's still mid-flash from a prior link
+      el.classList.add("just-linked");
+      setTimeout(function(){ if (el) el.classList.remove("just-linked"); }, 900);
+    });
   }
 
   function removeLink(linkId){
@@ -1706,6 +1763,20 @@
     renderAll();
     saveState();
     refreshOpenPanelLinks();
+  }
+
+  // Sets/clears a link's relationship label (e.g. "parent of", "3hr drive from").
+  // Purely a data + on-canvas-chip change — doesn't touch node content or AI context,
+  // so a full renderAll() would be overkill; renderLinks() alone is enough to move/
+  // remove the label chip on the canvas.
+  function setLinkLabel(linkId, value){
+    var link = state.links.filter(function(l){ return l.id === linkId; })[0];
+    if (!link) return;
+    var v = (value || "").replace(/\s+/g, " ").trim().slice(0, 60);
+    if ((link.label || "") === v) return;
+    link.label = v;
+    renderLinks();
+    saveState();
   }
 
   // If a node's side panel is open, bring its "Linked nodes" list and the context-size
@@ -2114,6 +2185,7 @@
         nodeEls[n.id] = el;
       }
       var wasPop = el.classList.contains("pop");
+      var wasJustLinked = el.classList.contains("just-linked");
       var isMatch = searchQuery && searchMatches.indexOf(n.id) >= 0;
       var isDimmed = searchQuery && searchMatches.length > 0 && !isMatch;
       var isMulti = multiSelected.has(n.id);
@@ -2131,6 +2203,7 @@
       } else if (wasPop){
         el.classList.add("pop");
       }
+      if (wasJustLinked) el.classList.add("just-linked");
       el.style.left = n.x + "px";
       el.style.top = n.y + "px";
       el.innerHTML = nodeInnerHtml(n);
@@ -2169,14 +2242,21 @@
     return { x: rect.cx + dx * t, y: rect.cy + dy * t };
   }
 
-  function curvedPath(pa, pb, curveSign){
+  // The curve's control point also doubles as the natural spot to anchor a
+  // relationship-label chip (see drawLink), so it's split out rather than
+  // buried inline inside the path-string builder.
+  function curveControlPoint(pa, pb, curveSign){
     var mx = (pa.x + pb.x) / 2, my = (pa.y + pb.y) / 2;
     var dx = pb.x - pa.x, dy = pb.y - pa.y;
     var dist = Math.hypot(dx, dy) || 1;
     var px = -dy / dist, py = dx / dist;
     var offset = Math.min(70, dist * 0.18) * curveSign;
-    var cx = mx + px * offset, cy = my + py * offset;
-    return "M " + pa.x + "," + pa.y + " Q " + cx + "," + cy + " " + pb.x + "," + pb.y;
+    return { x: mx + px * offset, y: my + py * offset };
+  }
+
+  function curvedPath(pa, pb, curveSign){
+    var c = curveControlPoint(pa, pb, curveSign);
+    return "M " + pa.x + "," + pa.y + " Q " + c.x + "," + c.y + " " + pb.x + "," + pb.y;
   }
 
   function effectiveEndpoint(id){
@@ -2191,14 +2271,15 @@
 
     var seen = {};
 
-    function drawLink(pathId, fromRectId, toRectId){
+    function drawLink(pathId, fromRectId, toRectId, label){
       var ra = getNodeRect(fromRectId), rb = getNodeRect(toRectId);
       if (!ra || !rb) return;
       seen[pathId] = true;
       var pa = boundaryPoint(ra, rb.cx, rb.cy);
       var pb = boundaryPoint(rb, ra.cx, ra.cy);
       var sign = fromRectId < toRectId ? 1 : -1;
-      var d = curvedPath(pa, pb, sign);
+      var ctrl = curveControlPoint(pa, pb, sign);
+      var d = "M " + pa.x + "," + pa.y + " Q " + ctrl.x + "," + ctrl.y + " " + pb.x + "," + pb.y;
       var path = linkPaths[pathId];
       if (!path){
         path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -2207,6 +2288,37 @@
         linkPaths[pathId] = path;
       }
       path.setAttribute("d", d);
+
+      if (label){
+        var g = linkLabels[pathId];
+        if (!g){
+          g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          g.setAttribute("class", "link-label-chip");
+          g.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "rect"));
+          g.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "text"));
+          svg.appendChild(g);
+          linkLabels[pathId] = g;
+        }
+        var rect = g.childNodes[0], text = g.childNodes[1];
+        text.setAttribute("x", ctrl.x);
+        text.setAttribute("y", ctrl.y);
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("dominant-baseline", "central");
+        text.textContent = label;
+        var bbox = null;
+        try{ bbox = text.getBBox(); }catch(e){}
+        if (bbox){
+          var padX = 6, padY = 3;
+          rect.setAttribute("x", bbox.x - padX);
+          rect.setAttribute("y", bbox.y - padY);
+          rect.setAttribute("width", bbox.width + padX * 2);
+          rect.setAttribute("height", bbox.height + padY * 2);
+          rect.setAttribute("rx", 5);
+        }
+      } else if (linkLabels[pathId]){
+        linkLabels[pathId].remove();
+        delete linkLabels[pathId];
+      }
     }
 
     state.links.forEach(function(l){
@@ -2217,7 +2329,7 @@
       if (fromCluster && toCluster && fromCluster.id === toCluster.id) return;
       var fromEff = effectiveEndpoint(l.from), toEff = effectiveEndpoint(l.to);
       if (fromEff === toEff) return;
-      drawLink(l.id, fromEff, toEff);
+      drawLink(l.id, fromEff, toEff, l.label);
     });
 
     // Hub-and-spoke: an expanded cluster draws a line to each of its
@@ -2232,6 +2344,9 @@
 
     Object.keys(linkPaths).forEach(function(id){
       if (!seen[id]){ linkPaths[id].remove(); delete linkPaths[id]; }
+    });
+    Object.keys(linkLabels).forEach(function(id){
+      if (!seen[id]){ linkLabels[id].remove(); delete linkLabels[id]; }
     });
   }
 
@@ -2348,7 +2463,12 @@
       aw.moved = true;
     }
     var dx = x - aw.cx, dy = y - aw.cy, hit = null;
-    if (Math.hypot(dx, dy) >= AW_INNER){
+    var dist = Math.hypot(dx, dy);
+    // Only the ring itself (between the centre hole and the outer edge) can
+    // select a wedge. Past the outer edge cancels too, same as the centre
+    // hole — lets someone bail out by dragging/clicking well clear of the
+    // wheel instead of having to land precisely back in the centre.
+    if (dist >= AW_INNER && dist < AW_RADIUS){
       var ang = Math.atan2(dy, dx) * 180 / Math.PI, best = 181;
       AW_ITEMS.forEach(function(item){
         var diff = Math.abs(((ang - item.angle + 540) % 360) - 180); // angular distance, 0-180
@@ -2566,8 +2686,12 @@
         if (resolveOverlaps(new Set(groupIds), 8)){ renderNodes(); renderLinks(); }
       } else {
         var draggedId = dragNode.node.id;
+        var tapMoved = dragNode.moved;
+        var tapPointerType = ev.pointerType;
+        var tapX = ev.clientX, tapY = ev.clientY;
         dragNode = null;
         if (resolveOverlaps(new Set([draggedId]), 8)){ renderNodes(); renderLinks(); }
+        if (!tapMoved && tapPointerType !== "mouse" && ev.type === "pointerup") registerNodeTap(draggedId, tapX, tapY);
       }
       saveState();
     }
@@ -2662,6 +2786,17 @@
       return;
     }
     openPanel(id);
+  }
+
+  function registerNodeTap(id, x, y){
+    var now = Date.now();
+    if (lastNodeTap && lastNodeTap.id === id && (now - lastNodeTap.time) < DBL_TAP_MS &&
+        Math.hypot(x - lastNodeTap.x, y - lastNodeTap.y) < DBL_TAP_SLOP){
+      lastNodeTap = null;
+      onNodeDblClick({ stopPropagation: function(){} }, id);
+    } else {
+      lastNodeTap = { id: id, time: now, x: x, y: y };
+    }
   }
 
   function refreshNodePosition(n){
@@ -2798,44 +2933,60 @@
   brandBtn.addEventListener("click", function(ev){ ev.stopPropagation(); openWorkspaceModal(); });
   document.getElementById("workspace-close").addEventListener("click", function(){ workspaceModal.style.display = "none"; });
   workspaceModal.addEventListener("click", function(ev){ if (ev.target === workspaceModal) workspaceModal.style.display = "none"; });
-  document.getElementById("workspace-new-btn").addEventListener("click", function(){
-    workspaceModal.style.display = "none";
-    createWorkspace();
-  });
 
   function openWorkspaceModal(){
     renderWorkspaceModal();
     workspaceModal.style.display = "flex";
   }
 
+  // Same real-thumbnail-grid look as the cold-start home screen (see
+  // renderHomeThumbnails) but shown as a popup over the current map, with
+  // rename/duplicate/delete actions added to each card since — unlike the
+  // cold-start screen — this is the only place those actions live.
   function renderWorkspaceModal(){
     var body = document.getElementById("workspace-body");
-    var sorted = workspaces.slice().sort(function(a, b){ return b.updatedAt - a.updatedAt; });
-    body.innerHTML = sorted.map(function(ws){
-      var isActive = ws.id === activeWorkspaceId;
-      return '<div class="workspace-item' + (isActive ? " active" : "") + '" data-open="' + ws.id + '">' +
-        '<div class="workspace-item-main"><div class="workspace-name">' + escapeHtml(ws.name) + (isActive ? " (current)" : "") + '</div>' +
-        '<div class="workspace-meta">Updated ' + relativeTime(ws.updatedAt) + '</div></div>' +
-        '<div class="workspace-item-actions">' +
-        '<button data-rename="' + ws.id + '" title="Rename"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2l3 3-8 8-3.5 1L3 11l8-9z"/></svg></button>' +
-        '<button data-duplicate="' + ws.id + '" title="Duplicate"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="8" height="8" rx="1.5"/><path d="M6 10v2.5A1.5 1.5 0 0 0 7.5 14H12a1.5 1.5 0 0 0 1.5-1.5V8A1.5 1.5 0 0 0 12 6.5H10"/></svg></button>' +
-        '<button data-delete="' + ws.id + '" class="danger" title="Delete"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.5 4.5V2.5h3v2M5 4.5l.6 9h4.8l.6-9"/></svg></button>' +
-        '</div></div>';
-    }).join("");
-    body.querySelectorAll("[data-open]").forEach(function(el){
-      el.addEventListener("click", function(ev){
-        if (ev.target.closest(".workspace-item-actions")) return;
-        switchWorkspace(el.dataset.open).then(function(){ workspaceModal.style.display = "none"; });
+    Promise.all(workspaces.map(function(ws){
+      return storage.get(graphKeyFor(ws.id)).catch(function(){ return null; }).then(function(g){ return { ws: ws, graph: g }; });
+    })).then(function(results){
+      results.sort(function(a, b){ return b.ws.updatedAt - a.ws.updatedAt; });
+      var html = results.map(function(r){
+        var isActive = r.ws.id === activeWorkspaceId;
+        var nodeCount = r.graph ? (r.graph.nodes || []).filter(function(n){ return n.type !== "cluster"; }).length : 0;
+        var thumbInner = (r.graph && r.graph.nodes && r.graph.nodes.length) ? buildThumbnailSvg(r.graph.nodes, r.graph.links) : '<div class="thumb-empty-label">Empty map</div>';
+        return '<div class="home-thumb' + (isActive ? " active" : "") + '" data-open="' + r.ws.id + '">' +
+          '<div class="home-thumb-preview">' + thumbInner + '</div>' +
+          '<div class="home-thumb-name">' + escapeHtml(r.ws.name) + (isActive ? " (current)" : "") + '</div>' +
+          '<div class="home-thumb-meta">' + nodeCount + ' node' + (nodeCount === 1 ? "" : "s") + ' · ' + relativeTime(r.ws.updatedAt) + '</div>' +
+          '<div class="thumb-actions">' +
+          '<button data-rename="' + r.ws.id + '" title="Rename"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2l3 3-8 8-3.5 1L3 11l8-9z"/></svg></button>' +
+          '<button data-duplicate="' + r.ws.id + '" title="Duplicate"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="8" height="8" rx="1.5"/><path d="M6 10v2.5A1.5 1.5 0 0 0 7.5 14H12a1.5 1.5 0 0 0 1.5-1.5V8A1.5 1.5 0 0 0 12 6.5H10"/></svg></button>' +
+          '<button data-delete="' + r.ws.id + '" class="danger" title="Delete"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.5 4.5V2.5h3v2M5 4.5l.6 9h4.8l.6-9"/></svg></button>' +
+          '</div></div>';
+      }).join("");
+      html += '<div class="home-thumb" id="workspace-new-tile">' +
+        '<div class="home-thumb-preview home-thumb-plus">+</div>' +
+        '<div class="home-thumb-name">New map</div><div class="home-thumb-meta">&nbsp;</div></div>';
+      body.innerHTML = html;
+      body.querySelectorAll("[data-open]").forEach(function(el){
+        el.addEventListener("click", function(ev){
+          if (ev.target.closest(".thumb-actions")) return;
+          switchWorkspace(el.dataset.open).then(function(){ workspaceModal.style.display = "none"; });
+        });
       });
-    });
-    body.querySelectorAll("[data-rename]").forEach(function(btn){
-      btn.addEventListener("click", function(ev){ ev.stopPropagation(); openRenameModal("workspace", btn.dataset.rename); });
-    });
-    body.querySelectorAll("[data-duplicate]").forEach(function(btn){
-      btn.addEventListener("click", function(ev){ ev.stopPropagation(); duplicateWorkspace(btn.dataset.duplicate); });
-    });
-    body.querySelectorAll("[data-delete]").forEach(function(btn){
-      btn.addEventListener("click", function(ev){ ev.stopPropagation(); deleteWorkspace(btn.dataset.delete); });
+      var newTile = document.getElementById("workspace-new-tile");
+      if (newTile) newTile.addEventListener("click", function(){
+        workspaceModal.style.display = "none";
+        createWorkspace();
+      });
+      body.querySelectorAll("[data-rename]").forEach(function(btn){
+        btn.addEventListener("click", function(ev){ ev.stopPropagation(); openRenameModal("workspace", btn.dataset.rename); });
+      });
+      body.querySelectorAll("[data-duplicate]").forEach(function(btn){
+        btn.addEventListener("click", function(ev){ ev.stopPropagation(); duplicateWorkspace(btn.dataset.duplicate); });
+      });
+      body.querySelectorAll("[data-delete]").forEach(function(btn){
+        btn.addEventListener("click", function(ev){ ev.stopPropagation(); deleteWorkspace(btn.dataset.delete); });
+      });
     });
   }
 
@@ -2866,6 +3017,7 @@
     else showMenuDropdown();
   }
   function showMenuDropdown(){
+    closePanel(); // the side panel and this dropdown overlap on screen -- only one open at a time
     var r = menuBtn.getBoundingClientRect();
     menuDropdown.style.right = (window.innerWidth - r.right) + "px";
     menuDropdown.style.left = "auto";
@@ -2943,6 +3095,8 @@
     nodeEls = {};
     Object.keys(linkPaths).forEach(function(pid){ linkPaths[pid].remove(); });
     linkPaths = {};
+    Object.keys(linkLabels).forEach(function(pid){ linkLabels[pid].remove(); });
+    linkLabels = {};
     world.innerHTML = "";
     multiSelected.clear();
     closePanel();
@@ -3079,7 +3233,13 @@
     var wy = (ev.clientY - wrapRect.top - viewport.y) / viewport.scale;
     var skipped = [];
     Array.prototype.forEach.call(files, function(file, idx){
-      var type = file.type.indexOf("image") === 0 ? "image" : (file.type === "application/pdf" ? "pdf" : null);
+      // file.type is unreliable for PDFs from some drag sources (certain
+      // Android file managers, network drives) — it can come back empty even
+      // for a real PDF, so fall back to the extension when MIME sniffing
+      // comes up blank.
+      var isPdf = file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+      var isImage = file.type.indexOf("image") === 0 || /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(file.name);
+      var type = isImage ? "image" : (isPdf ? "pdf" : null);
       if (!type) return;
       if (type === "pdf"){
         var sizeError = checkFileSize(file, "pdf");
@@ -3098,6 +3258,7 @@
   // ---------- panel (per-node) ----------
 
   function openPanel(id){
+    hideMenuDropdown(); // the dropdown and the side panel overlap on screen -- only one open at a time
     selectedId = id;
     panelMode = "node";
     var n = findNode(id);
@@ -3111,6 +3272,7 @@
   }
 
   function openGlobalPanel(){
+    hideMenuDropdown(); // the dropdown and the side panel overlap on screen -- only one open at a time
     selectedId = null;
     panelMode = "global";
     panel.classList.add("open");
@@ -3253,14 +3415,25 @@
     if (fUpload){
       fUpload.addEventListener("click", function(){
         pendingFileNodeId = n.id;
-        fileInput.accept = n.type === "pdf" ? ".pdf" : "image/*";
+        // Some mobile browsers (notably iOS Safari) unreliably surface files
+        // whose accept filter is extension-only, or whose accept filter is
+        // MIME-only — some file providers report .pdf files as blank/octet
+        // type, others only recognise the MIME type. Listing both keeps a
+        // PDF pickable under any of those pickers.
+        fileInput.accept = n.type === "pdf" ? ".pdf,application/pdf" : "image/*";
         fileInput.click();
       });
     }
     var annotateBtn = document.getElementById("annotate-btn");
     if (annotateBtn) annotateBtn.addEventListener("click", function(){
       if (!hasActiveApiKey()){ promptForApiKey("Generating a title, summary & tags uses AI. Add an API key first."); return; }
-      autoAnnotate(n, true);
+      var originalHtml = annotateBtn.innerHTML;
+      annotateBtn.disabled = true;
+      annotateBtn.innerHTML = '<span class="dot" style="background:var(--gold)"></span>Generating...';
+      autoAnnotate(n, true).finally(function(){
+        annotateBtn.disabled = false;
+        annotateBtn.innerHTML = originalHtml;
+      });
     });
 
     var askBtn = document.getElementById("ai-ask-btn");
@@ -3330,7 +3503,16 @@
         autoAnnotate(n, true); // force: let a smarter AI-generated title (from real content) replace the filename-based one when a key is available
       }).catch(function(err){
         console.error(err);
-        if (status) status.textContent = "Could not extract text from this PDF.";
+        // "pdf.js not loaded" means the vendor script/worker never reached the
+        // browser (e.g. a missing/mis-deployed vendor/ folder on whatever
+        // host is serving the app) — a hosting problem, not a bad file. Say
+        // so distinctly, since a generic message here would look identical
+        // to a genuinely corrupt PDF and send troubleshooting the wrong way.
+        var msg = (err && err.message === "pdf.js not loaded")
+          ? "PDF tools failed to load on this page. Reload and try again — if it keeps happening, the site hosting this app may be missing files."
+          : "Could not extract text from this PDF. The node was still added, but without its content.";
+        if (status) status.textContent = msg;
+        alert(msg);
       });
     }
   }
@@ -3371,11 +3553,75 @@
       var other = findNode(otherId);
       if (!other) return;
       var linkObj = state.links.filter(function(l){ return (l.from === n.id && l.to === otherId) || (l.to === n.id && l.from === otherId); })[0];
-      html += '<div class="linked-item"><span>' + escapeHtml(other.title || "Untitled") + '</span><button data-link="' + linkObj.id + '">&times;</button></div>';
+      html += '<div class="linked-item">' +
+        '<div class="linked-item-top"><span>' + escapeHtml(other.title || "Untitled") + '</span>' +
+        '<button data-link="' + linkObj.id + '" class="linked-unlink" title="Remove link">&times;</button></div>' +
+        '<div class="linked-item-rel">' +
+        '<input type="text" class="link-label-input" data-link="' + linkObj.id + '" maxlength="60" ' +
+          'placeholder="Add relationship (e.g. parent of)..." value="' + escapeHtml(linkObj.label || "") + '">' +
+        '<button type="button" class="link-analyze-btn" data-link="' + linkObj.id + '" title="Ask AI to suggest a relationship label">' +
+          '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">' +
+          '<path d="M8.4 4.6l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5.5-1.1z" fill="currentColor" stroke="none"/></svg>' +
+          '<span class="link-analyze-label">Analyze</span>' +
+        '</button>' +
+        '</div></div>';
     });
     container.innerHTML = html;
-    container.querySelectorAll("button[data-link]").forEach(function(btn){
+    container.querySelectorAll("button.linked-unlink").forEach(function(btn){
       btn.addEventListener("click", function(){ removeLink(btn.dataset.link); });
+    });
+    container.querySelectorAll("input.link-label-input").forEach(function(inp){
+      function commit(){ setLinkLabel(inp.dataset.link, inp.value); }
+      inp.addEventListener("blur", commit);
+      inp.addEventListener("keydown", function(ev){
+        if (ev.key === "Enter"){ ev.preventDefault(); commit(); inp.blur(); }
+      });
+    });
+    container.querySelectorAll("button.link-analyze-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){ analyzeLinkRelationship(btn.dataset.link); });
+    });
+  }
+
+  // ---------- AI: suggest a relationship label for a link ----------
+  // A small, cheap, single-shot request (same model tier as autoAnnotate) that reads
+  // just the two linked nodes and proposes a short "parent of" / "cheaper than" style
+  // phrase. Always manual (the "Analyze" tap), and always lands as an editable
+  // suggestion the person can accept as-is or tweak, never auto-saved silently.
+  function analyzeLinkRelationship(linkId){
+    if (!hasActiveApiKey()){ promptForApiKey("Add an API key to analyze links."); return; }
+    var link = state.links.filter(function(l){ return l.id === linkId; })[0];
+    if (!link) return;
+    var fromNode = findNode(link.from), toNode = findNode(link.to);
+    if (!fromNode || !toNode) return;
+
+    var btn = document.querySelector('button.link-analyze-btn[data-link="' + linkId + '"]');
+    var labelSpan = btn && btn.querySelector(".link-analyze-label");
+    if (btn) btn.disabled = true;
+    if (labelSpan) labelSpan.textContent = "Analyzing...";
+
+    var instruction = 'Two connected notes from a mind-mapping app follow, labeled "A" and "B". ' +
+      'Reply with ONLY a short relationship phrase (2-5 words) describing how A relates to B, from A\'s point of ' +
+      'view (for example: "parent of", "cheaper than", "3hr drive from", "cites", "witnessed"). ' +
+      'No punctuation, no quotes, no explanation — just the phrase.';
+
+    Promise.all([nodeToContentParts(fromNode), nodeToContentParts(toNode)]).then(function(partsArrays){
+      var parts = [{ type: "text", text: instruction }, { type: "text", text: "### A" }]
+        .concat(partsArrays[0], [{ type: "text", text: "### B" }], partsArrays[1]);
+      return callAI(parts, 60, "cheap");
+    }).then(function(text){
+      var suggestion = (text || "").trim().replace(/^["'`]+|["'`]+$/g, "").replace(/[.!?]+$/, "").slice(0, 60);
+      if (!suggestion) { showToast("AI didn't return a suggestion.", null, null, 3000); return; }
+      setLinkLabel(linkId, suggestion);
+      var input = document.querySelector('input.link-label-input[data-link="' + linkId + '"]');
+      if (input){ input.value = suggestion; input.focus(); input.select(); }
+    }).catch(function(err){
+      console.error("link analyze failed", err);
+      showToast("Couldn't analyze that link: " + (err && err.message ? err.message : "unknown error"), null, null, 4000);
+    }).finally(function(){
+      var liveBtn = document.querySelector('button.link-analyze-btn[data-link="' + linkId + '"]');
+      var liveLabelSpan = liveBtn && liveBtn.querySelector(".link-analyze-label");
+      if (liveBtn) liveBtn.disabled = false;
+      if (liveLabelSpan) liveLabelSpan.textContent = "Analyze";
     });
   }
 
@@ -3943,10 +4189,11 @@
     }).join("");
     var onFinalSlide = tutorialSlideIndex === TUTORIAL_SLIDES.length - 1;
     document.getElementById("tutorial-next").textContent = onFinalSlide ? "Get started" : "Next";
-    // On the final slide, "Skip" becomes a second path in: straight to adding
-    // a free Gemini key, since that's the one thing most likely to actually
-    // block someone from trying AI features right after onboarding. "Get
-    // started" stays the primary button — this is an option, not a gate.
+    // On the final slide, "Skip" becomes a second path out: straight to
+    // Google AI Studio to grab a free Gemini key, since that's the one thing
+    // most likely to actually block someone from trying AI features right
+    // after onboarding. "Get started" stays the primary button — this is an
+    // option, not a gate.
     document.getElementById("tutorial-skip").textContent = onFinalSlide ? "Add Gemini key" : "Skip";
     document.getElementById("tutorial-buttons").classList.toggle("tutorial-buttons-final", onFinalSlide);
   }
@@ -3973,7 +4220,7 @@
   document.getElementById("tutorial-skip").addEventListener("click", function(){
     var onFinalSlide = tutorialSlideIndex === TUTORIAL_SLIDES.length - 1;
     closeTutorial(true); // close first — never stack a new modal on top of the tutorial
-    if (onFinalSlide) openSettingsModal("gemini");
+    if (onFinalSlide) openExternalUrl("https://aistudio.google.com/apikey");
   });
   tutorialModal.addEventListener("click", function(ev){ if (ev.target === tutorialModal) closeTutorial(true); });
 
